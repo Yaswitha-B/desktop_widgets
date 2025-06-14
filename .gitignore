@@ -1,0 +1,12 @@
+# Ignore build directory (out-of-source builds)
+build/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Backup / temporary files
+*.swp
+*~
