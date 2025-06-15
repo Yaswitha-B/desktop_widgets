@@ -12,12 +12,14 @@ set(SOURCES
     src/MainWidget.cpp
     src/BaseWidget.cpp
     src/ColorWidget.cpp
+    src/DigitalClockWidget.cpp             # <- Add this line
 )
 
 set(HEADERS
     include/MainWidget.h
     include/BaseWidget.h
     include/ColorWidget.h
+    include/DigitalClockWidget.h          # <- Add this line
 )
 
 add_executable(DesktopWidgets ${SOURCES} ${HEADERS})
