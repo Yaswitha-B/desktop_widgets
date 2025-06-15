@@ -10,10 +10,14 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 set(SOURCES
     src/main.cpp
     src/MainWidget.cpp
+    src/BaseWidget.cpp
+    src/ColorWidget.cpp
 )
 
 set(HEADERS
     include/MainWidget.h
+    include/BaseWidget.h
+    include/ColorWidget.h
 )
 
 add_executable(DesktopWidgets ${SOURCES} ${HEADERS})
