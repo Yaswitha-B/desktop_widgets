@@ -1,16 +1,11 @@
 #include <QApplication>
-#include <QWidget>
-#include <iostream>
+#include "MainWidget.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
-    std::cout << "App started!" << std::endl;
 
-    QWidget window;
-    window.setWindowTitle("Overlay Example");
-    window.setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
-    window.resize(400, 300);
-    window.show();
+    MainWidget mainWindow;
+    mainWindow.show();
 
     return app.exec();
 }
