@@ -1,4 +1,3 @@
-// colorwidget.cpp
 #include "ColorWidget.h"
 #include <QPainter>
 #include <QMouseEvent>
@@ -6,24 +5,27 @@
 ColorWidget::ColorWidget(QWidget *parent)
     : BaseWidget(parent), currentColor(Qt::red)
 {
-    setFixedSize(100, 100); // Set size
+    setFixedSize(100, 100); 
 }
 
-void ColorWidget::paintEvent(QPaintEvent *event) // Added event name
+void ColorWidget::paintEvent(QPaintEvent *event) 
 {
-    QFrame::paintEvent(event); // Call QFrame's paintEvent to draw the frame
+    QFrame::paintEvent(event);
 
     QPainter painter(this);
     painter.setBrush(currentColor);
-    painter.drawRect(contentsRect()); // Draw inside the frame
+    painter.drawRect(contentsRect()); 
 }
 
 void ColorWidget::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
-    {
+
+    BaseWidget::mousePressEvent(event);
+    
+    if (!event->isAccepted() && event->button() == Qt::LeftButton && contentsRect().contains(event->pos())) {
         toggleColor();
         update();
+        event->accept();
     }
 }
 
