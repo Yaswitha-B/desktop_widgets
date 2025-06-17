@@ -1,16 +1,16 @@
 #pragma once
-
 #include <QFrame>
 #include <QMouseEvent>
+#include <QPoint>
 
-class BaseWidget : public QFrame
-{
+class BaseWidget : public QFrame {
     Q_OBJECT
+
 public:
     explicit BaseWidget(QWidget *parent = nullptr);
+    ~BaseWidget() override = default;
 
     void setBorderWidth(int width);
-    int getBorderWidth() const { return borderWidth; }
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -18,9 +18,9 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
-    bool dragging;
+    bool isDragging = false;
     QPoint dragStartPosition;
-    int borderWidth;
+    int borderWidth = 1;
 
     void updateBorderStyle();
     void adjustSizeToChild();

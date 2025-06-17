@@ -7,7 +7,6 @@ DigitalClockWidget::DigitalClockWidget(QWidget *parent)
     setFixedSize(200, 80); 
     connect(timer, &QTimer::timeout, this, &DigitalClockWidget::updateTime);
     timer->start(1000); 
-    currentTime = QTime::currentTime();
     updateTime(); 
 }
 
