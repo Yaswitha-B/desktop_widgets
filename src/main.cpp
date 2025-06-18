@@ -3,7 +3,6 @@
 #include "ColorWidget.h"
 #include "DigitalClockWidget.h"
 #include "ToDoListWidget.h"
-#include "StickyNotesWidget.h"
 
 
 int main(int argc, char *argv[]) {
@@ -21,14 +20,8 @@ int main(int argc, char *argv[]) {
     clockWidget->show();
 
     ToDoListWidget *todoWidget = new ToDoListWidget(&mainWindow);
-    todoWidget->setGeometry(100, 300, 450, 500);  // Bigger size
+    todoWidget->setGeometry(100, 300, 450, 500);  
     todoWidget->show();
-
-    StickyNotesWidget *notesWidget = new StickyNotesWidget(&mainWindow);
-    notesWidget->setGeometry(600, 300, 300, 400); // Right side
-    notesWidget->show();
-
-
 
     return app.exec();
 }

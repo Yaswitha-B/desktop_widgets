@@ -10,3 +10,5 @@ Makefile
 # Backup / temporary files
 *.swp
 *~
+
+.vscode/

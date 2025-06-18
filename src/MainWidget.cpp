@@ -8,9 +8,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent) {
 
     setAttribute(Qt::WA_TranslucentBackground);
 
-    setAttribute(Qt::WA_TransparentForMouseEvents, false);
+    setAttribute(Qt::WA_TransparentForMouseEvents, true);
 
-    // Set the widget to cover all screens
     QRect fullGeometry;
     const auto screens = QGuiApplication::screens();
     for (QScreen* screen : screens) {
@@ -27,4 +26,5 @@ void MainWidget::paintEvent(QPaintEvent *event)
     QColor bgColor(0, 0, 0, 120); 
     painter.fillRect(rect(), bgColor);
 }
-MainWidget::~MainWidget() {}
+
+MainWidget::~MainWidget() = default;
