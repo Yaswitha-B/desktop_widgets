@@ -8,7 +8,7 @@ CalendarWidget::CalendarWidget(QWidget *parent)
     setFixedSize(420, 380);
 
     calendar = new QCalendarWidget(this);
-    calendar->setGridVisible(false);  // No grid lines
+    calendar->setGridVisible(false);
     calendar->setNavigationBarVisible(false);  
     calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     calendar->setHorizontalHeaderFormat(QCalendarWidget::SingleLetterDayNames);
@@ -17,7 +17,6 @@ CalendarWidget::CalendarWidget(QWidget *parent)
     calendar->setMinimumDate(QDate(1900, 1, 1));
     calendar->setMaximumDate(QDate(2100, 12, 31));
 
-    // Hide previous/next month dates
     QTextCharFormat hiddenFormat;
     hiddenFormat.setForeground(Qt::transparent);
     for (int row = 0; row < 6; ++row) {

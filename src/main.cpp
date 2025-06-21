@@ -4,7 +4,7 @@
 #include "DigitalClockWidget.h"
 #include "ToDoListWidget.h"
 #include "CalendarWidget.h"
-
+#include "StickyNoteWidget.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
@@ -27,6 +27,11 @@ int main(int argc, char *argv[]) {
     auto calendarWidget = new CalendarWidget(&mainWindow);
     calendarWidget->setGeometry(550, 100, 300, 400);;
     calendarWidget->show();
+
+    auto stickyNote = new StickyNoteWidget(&mainWindow);
+    stickyNote->resize(350, 350); 
+    stickyNote->move(mainWindow.width() - stickyNote->width() - 30, 60); 
+    stickyNote->show();
 
     return app.exec();
 }

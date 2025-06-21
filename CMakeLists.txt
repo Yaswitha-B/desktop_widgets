@@ -15,6 +15,7 @@ set(SOURCES
     src/DigitalClockWidget.cpp             
     src/ToDoListWidget.cpp
     src/CalendarWidget.cpp
+    src/StickyNoteWidget.cpp
 )
 
 set(HEADERS
@@ -24,6 +25,7 @@ set(HEADERS
     include/DigitalClockWidget.h
     include/ToDoListWidget.h   
     include/CalendarWidget.h
+    include/StickyNoteWidget.h
 )
 
 add_executable(DesktopWidgets ${SOURCES} ${HEADERS})
