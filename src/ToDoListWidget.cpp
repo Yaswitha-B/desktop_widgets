@@ -1,12 +1,11 @@
 #include "ToDoListWidget.h"
 
 ToDoListWidget::ToDoListWidget(QWidget *parent) : BaseWidget(parent) {
-    setFixedSize(300, 400); // adjust size as needed
-    setStyleSheet("background-color: #eeeeee; border-radius: 20px;");
+    setFixedSize(300, 400); 
+    setStyleSheet("background-color: #eeeeee;");
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-    // Input layout
     QHBoxLayout *inputLayout = new QHBoxLayout();
     taskInput = new QLineEdit();
     taskInput->setPlaceholderText("Enter a task...");
@@ -16,7 +15,6 @@ ToDoListWidget::ToDoListWidget(QWidget *parent) : BaseWidget(parent) {
     inputLayout->addWidget(taskInput);
     inputLayout->addWidget(addButton);
 
-    // Task list container
     QWidget *taskContainer = new QWidget();
     taskLayout = new QVBoxLayout(taskContainer);
     taskLayout->setAlignment(Qt::AlignTop);
@@ -72,7 +70,7 @@ bool ToDoListWidget::eventFilter(QObject *watched, QEvent *event) {
             return true;
         }
     }
-    return BaseWidget::eventFilter(watched, event); // Correct base call
+    return BaseWidget::eventFilter(watched, event);
 }
 
 void ToDoListWidget::removeTask(QWidget *taskWidget) {

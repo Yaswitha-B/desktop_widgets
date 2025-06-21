@@ -3,6 +3,7 @@
 #include "ColorWidget.h"
 #include "DigitalClockWidget.h"
 #include "ToDoListWidget.h"
+#include "SettingsWidget.h"
 
 
 int main(int argc, char *argv[]) {
@@ -10,18 +11,10 @@ int main(int argc, char *argv[]) {
 
     MainWidget mainWindow;
     mainWindow.show();
-
-    auto colorWidget = new ColorWidget(&mainWindow);
-    colorWidget->setGeometry(100, 100, 150, 150);
-    colorWidget->show();
-
-    auto clockWidget = new DigitalClockWidget(&mainWindow);
-    clockWidget->setGeometry(300, 100, 200, 100);
-    clockWidget->show();
-
-    auto todoWidget = new ToDoListWidget(&mainWindow);
-    todoWidget->setGeometry(550, 100, 300, 400);
-    todoWidget->show();
+    
+    auto settingsWidget = new SettingsWidget(&mainWindow);
+    settingsWidget->setGeometry(900, 100, 60, 60);
+    settingsWidget->show();
     
     return app.exec();
 }
