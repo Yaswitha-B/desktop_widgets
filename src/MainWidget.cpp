@@ -3,12 +3,10 @@
 #include <QPainter>
 
 MainWidget::MainWidget(QWidget *parent) : QWidget(parent) {
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnBottomHint | Qt::BypassWindowManagerHint);
-    
-
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnBottomHint | Qt::X11BypassWindowManagerHint);
     setAttribute(Qt::WA_TranslucentBackground);
-
-    setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    setAttribute(Qt::WA_TransparentForMouseEvents);
+    setAttribute(Qt::WA_NoSystemBackground);
 
     QRect fullGeometry;
     const auto screens = QGuiApplication::screens();
@@ -22,9 +20,6 @@ void MainWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-
-    QColor bgColor(0, 0, 0, 120); 
-    painter.fillRect(rect(), bgColor);
 }
 
 MainWidget::~MainWidget() = default;
