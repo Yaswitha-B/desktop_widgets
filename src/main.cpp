@@ -3,6 +3,7 @@
 #include "ColorWidget.h"
 #include "DigitalClockWidget.h"
 #include "ToDoListWidget.h"
+#include "CalendarWidget.h"
 
 
 int main(int argc, char *argv[]) {
@@ -22,6 +23,10 @@ int main(int argc, char *argv[]) {
     auto todoWidget = new ToDoListWidget(&mainWindow);
     todoWidget->setGeometry(550, 100, 300, 400);
     todoWidget->show();
-    
+
+    auto calendarWidget = new CalendarWidget(&mainWindow);
+    calendarWidget->setGeometry(550, 100, 300, 400);;
+    calendarWidget->show();
+
     return app.exec();
 }
