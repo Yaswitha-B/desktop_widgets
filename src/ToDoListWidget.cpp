@@ -1,16 +1,16 @@
 #include "ToDoListWidget.h"
 
-ToDoListWidget::ToDoListWidget(QWidget *parent) : QWidget(parent) {
+ToDoListWidget::ToDoListWidget(QWidget *parent) : BaseWidget(parent) {
+    setFixedSize(300, 400); // adjust size as needed
     setStyleSheet("background-color: #eeeeee; border-radius: 20px;");
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-    // Input
+    // Input layout
     QHBoxLayout *inputLayout = new QHBoxLayout();
     taskInput = new QLineEdit();
     taskInput->setPlaceholderText("Enter a task...");
     taskInput->setStyleSheet("border-radius: 15px; padding: 6px;");
-
     QPushButton *addButton = new QPushButton("Add");
     connect(addButton, &QPushButton::clicked, this, &ToDoListWidget::addTask);
     inputLayout->addWidget(taskInput);
@@ -53,14 +53,9 @@ void ToDoListWidget::addTask() {
         toggleTaskState(checkbox, label);
     });
 
-    // Double-click delete
     taskWidget->installEventFilter(this);
-    connect(taskWidget, &QWidget::destroyed, [=]() {
-        taskWidget->deleteLater();
-    });
 }
 
-// Strike-through toggle
 void ToDoListWidget::toggleTaskState(QCheckBox *checkbox, QLabel *label) {
     if (checkbox->isChecked()) {
         label->setStyleSheet("text-decoration: line-through; color: gray;");
@@ -69,7 +64,6 @@ void ToDoListWidget::toggleTaskState(QCheckBox *checkbox, QLabel *label) {
     }
 }
 
-// Override event filter to detect double-click on task
 bool ToDoListWidget::eventFilter(QObject *watched, QEvent *event) {
     if (event->type() == QEvent::MouseButtonDblClick) {
         QWidget *taskWidget = qobject_cast<QWidget *>(watched);
@@ -78,10 +72,9 @@ bool ToDoListWidget::eventFilter(QObject *watched, QEvent *event) {
             return true;
         }
     }
-    return QWidget::eventFilter(watched, event);
+    return BaseWidget::eventFilter(watched, event); // Correct base call
 }
 
-// Remove task
 void ToDoListWidget::removeTask(QWidget *taskWidget) {
     taskLayout->removeWidget(taskWidget);
     taskWidget->deleteLater();

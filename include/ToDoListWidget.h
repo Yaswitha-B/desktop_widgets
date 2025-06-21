@@ -1,24 +1,22 @@
 #pragma once
 
-#include <QWidget>
+#include "BaseWidget.h"
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QCheckBox>
 #include <QLabel>
-#include <QFrame>
-#include <QMouseEvent>
-#include <QEvent>  // Include this for QEvent
+#include <QEvent>
 
-class ToDoListWidget : public QWidget {
+class ToDoListWidget : public BaseWidget {
     Q_OBJECT
 
 public:
     explicit ToDoListWidget(QWidget *parent = nullptr);
 
 protected:
-    bool eventFilter(QObject *watched, QEvent *event) override;  // <-- ADD THIS LINE
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private slots:
     void addTask();

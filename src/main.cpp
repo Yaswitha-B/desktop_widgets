@@ -19,10 +19,9 @@ int main(int argc, char *argv[]) {
     clockWidget->setGeometry(300, 100, 200, 100);
     clockWidget->show();
 
-    ToDoListWidget widget;
-    widget.setFixedSize(400, 600);
-    widget.setWindowTitle("To-Do List");
-    widget.show();
+    auto todoWidget = new ToDoListWidget(&mainWindow);
+    todoWidget->setGeometry(550, 100, 300, 400);
+    todoWidget->show();
     
     return app.exec();
 }
