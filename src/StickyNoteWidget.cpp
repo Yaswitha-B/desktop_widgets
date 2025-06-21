@@ -10,7 +10,7 @@ StickyNoteWidget::StickyNoteWidget(QWidget *parent)
 void StickyNoteWidget::setupUI() {
     noteText = new QTextEdit(this);
     noteText->setPlaceholderText("Write your note here...");
-    noteText->setStyleSheet("background: transparent; font-size: 14px;");
+    noteText->setStyleSheet("border: none; background: transparent; font-size: 14px;");
 
     colorButton = new QPushButton("🎨", this);
     colorButton->setFixedSize(24, 24);
@@ -35,7 +35,7 @@ void StickyNoteWidget::changeColor() {
 }
 
 void StickyNoteWidget::applyStyle(const QColor &color) {
-    QString style = QString("background-color: %1; border: 1px solid #999; border-radius: 8px;")
+    QString style = QString("background-color: %1;")
                         .arg(color.name());
     setStyleSheet(style);
 }

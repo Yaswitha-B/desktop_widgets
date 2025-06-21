@@ -34,9 +34,9 @@ void SettingsWidget::paintEvent(QPaintEvent *event)
 }
 
 void SettingsWidget::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
+    BaseWidget::mousePressEvent(event);
+    if (!event->isAccepted() && event->button() == Qt::LeftButton) {
         WidgetManagerDialog dialog(parentWidget());
         dialog.exec();
     }
-    BaseWidget::mousePressEvent(event);
 }

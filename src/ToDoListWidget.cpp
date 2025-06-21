@@ -9,7 +9,7 @@ ToDoListWidget::ToDoListWidget(QWidget *parent) : BaseWidget(parent) {
     QHBoxLayout *inputLayout = new QHBoxLayout();
     taskInput = new QLineEdit();
     taskInput->setPlaceholderText("Enter a task...");
-    taskInput->setStyleSheet("border-radius: 15px; padding: 6px;");
+    taskInput->setStyleSheet("padding: 6px;");
     QPushButton *addButton = new QPushButton("Add");
     connect(addButton, &QPushButton::clicked, this, &ToDoListWidget::addTask);
     inputLayout->addWidget(taskInput);
@@ -33,7 +33,7 @@ void ToDoListWidget::addTask() {
     if (taskText.isEmpty()) return;
 
     QWidget *taskWidget = new QWidget();
-    taskWidget->setStyleSheet("background-color: white; border-radius: 15px; padding: 8px;");
+    taskWidget->setStyleSheet("background-color: white; padding: 8px;");
     QHBoxLayout *layout = new QHBoxLayout(taskWidget);
 
     QCheckBox *checkbox = new QCheckBox();
