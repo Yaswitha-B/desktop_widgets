@@ -20,8 +20,8 @@ set(HEADERS
     include/MainWidget.h
     include/BaseWidget.h
     include/ColorWidget.h
-    include/DigitalClockWidget.h          
-    include/ToDoListWidget.h
+    include/DigitalClockWidget.h
+    include/ToDoListWidget.h   
 )
 
 add_executable(DesktopWidgets ${SOURCES} ${HEADERS})

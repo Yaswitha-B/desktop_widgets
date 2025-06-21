@@ -1,27 +1,31 @@
 #pragma once
 
-#include "BaseWidget.h"
-#include <QListWidget>
-#include <QPushButton>
+#include <QWidget>
+#include <QVBoxLayout>
 #include <QLineEdit>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QCheckBox>
+#include <QLabel>
+#include <QFrame>
+#include <QMouseEvent>
+#include <QEvent>  // Include this for QEvent
 
-class ToDoListWidget : public BaseWidget
-{
+class ToDoListWidget : public QWidget {
     Q_OBJECT
+
 public:
     explicit ToDoListWidget(QWidget *parent = nullptr);
-    ~ToDoListWidget();
+
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;  // <-- ADD THIS LINE
 
 private slots:
     void addTask();
-    void removeTaskItem(QWidget *itemWidget);
-    void loadTasksFromFile();
-    void saveTasksToFile();
+    void removeTask(QWidget *taskWidget);
+    void toggleTaskState(QCheckBox *checkbox, QLabel *label);
 
 private:
-    QLineEdit *input;
-    QPushButton *addButton;
-    QListWidget *taskList;
-
-    void createTaskItem(const QString &taskText, bool initializing = false);
+    QVBoxLayout *taskLayout;
+    QLineEdit *taskInput;
 };

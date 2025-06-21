@@ -1,125 +1,88 @@
 #include "ToDoListWidget.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QFile>
-#include <QTextStream>
-#include <QMessageBox>
 
-ToDoListWidget::ToDoListWidget(QWidget *parent)
-    : BaseWidget(parent)
-{
-    input = new QLineEdit(this);
-    input->setPlaceholderText("What's on your mind?");
-    input->setMinimumHeight(30);
-    input->setFont(QFont("Arial", 12));
-
-    addButton = new QPushButton("Add Task", this);
-    addButton->setMinimumHeight(30);
-
-    taskList = new QListWidget(this);
-    taskList->setSpacing(10);
+ToDoListWidget::ToDoListWidget(QWidget *parent) : QWidget(parent) {
+    setStyleSheet("background-color: #eeeeee; border-radius: 20px;");
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    QHBoxLayout *topLayout = new QHBoxLayout();
 
-    topLayout->addWidget(input);
-    topLayout->addWidget(addButton);
+    // Input
+    QHBoxLayout *inputLayout = new QHBoxLayout();
+    taskInput = new QLineEdit();
+    taskInput->setPlaceholderText("Enter a task...");
+    taskInput->setStyleSheet("border-radius: 15px; padding: 6px;");
 
-    mainLayout->addLayout(topLayout);
-    mainLayout->addWidget(taskList);
-    setLayout(mainLayout);
-
+    QPushButton *addButton = new QPushButton("Add");
     connect(addButton, &QPushButton::clicked, this, &ToDoListWidget::addTask);
+    inputLayout->addWidget(taskInput);
+    inputLayout->addWidget(addButton);
 
-    loadTasksFromFile();
+    // Task list container
+    QWidget *taskContainer = new QWidget();
+    taskLayout = new QVBoxLayout(taskContainer);
+    taskLayout->setAlignment(Qt::AlignTop);
+
+    QScrollArea *scrollArea = new QScrollArea();
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(taskContainer);
+    scrollArea->setStyleSheet("border: none;");
+
+    mainLayout->addLayout(inputLayout);
+    mainLayout->addWidget(scrollArea);
 }
 
-ToDoListWidget::~ToDoListWidget()
-{
-    saveTasksToFile();
-}
+void ToDoListWidget::addTask() {
+    QString taskText = taskInput->text().trimmed();
+    if (taskText.isEmpty()) return;
 
-void ToDoListWidget::addTask()
-{
-    QString text = input->text().trimmed();
-    if (!text.isEmpty()) {
-        createTaskItem(text);
-        input->clear();
-        saveTasksToFile();
-    }
-}
+    QWidget *taskWidget = new QWidget();
+    taskWidget->setStyleSheet("background-color: white; border-radius: 15px; padding: 8px;");
+    QHBoxLayout *layout = new QHBoxLayout(taskWidget);
 
-void ToDoListWidget::createTaskItem(const QString &taskText, bool initializing)
-{
-    QWidget *itemWidget = new QWidget(this);
-    QHBoxLayout *layout = new QHBoxLayout(itemWidget);
-    layout->setContentsMargins(10, 5, 10, 5);
-
+    QCheckBox *checkbox = new QCheckBox();
     QLabel *label = new QLabel(taskText);
-    label->setFont(QFont("Arial", 14));
-    label->setWordWrap(true);
-    label->setMinimumHeight(30);
+    label->setStyleSheet("font-size: 14px;");
 
-    QPushButton *removeButton = new QPushButton("❌");
-    removeButton->setFixedSize(30, 30);
-    removeButton->setToolTip("Remove Task");
-
+    layout->addWidget(checkbox);
     layout->addWidget(label);
     layout->addStretch();
-    layout->addWidget(removeButton);
 
-    itemWidget->setLayout(layout);
-    QListWidgetItem *item = new QListWidgetItem(taskList);
-    item->setSizeHint(QSize(0, 50));
-    taskList->setItemWidget(item, itemWidget);
+    taskLayout->addWidget(taskWidget);
+    taskInput->clear();
 
-    connect(removeButton, &QPushButton::clicked, this, [=]() {
-        removeTaskItem(itemWidget);
-        saveTasksToFile();
+    connect(checkbox, &QCheckBox::stateChanged, this, [=]() {
+        toggleTaskState(checkbox, label);
     });
 
-    if (!initializing)
-        saveTasksToFile();
+    // Double-click delete
+    taskWidget->installEventFilter(this);
+    connect(taskWidget, &QWidget::destroyed, [=]() {
+        taskWidget->deleteLater();
+    });
 }
 
-void ToDoListWidget::removeTaskItem(QWidget *itemWidget)
-{
-    for (int i = 0; i < taskList->count(); ++i) {
-        QListWidgetItem *item = taskList->item(i);
-        if (taskList->itemWidget(item) == itemWidget) {
-            delete taskList->takeItem(i);
-            return;
-        }
+// Strike-through toggle
+void ToDoListWidget::toggleTaskState(QCheckBox *checkbox, QLabel *label) {
+    if (checkbox->isChecked()) {
+        label->setStyleSheet("text-decoration: line-through; color: gray;");
+    } else {
+        label->setStyleSheet("text-decoration: none; color: black;");
     }
 }
 
-void ToDoListWidget::saveTasksToFile()
-{
-    QFile file("tasks.txt");
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&file);
-        for (int i = 0; i < taskList->count(); ++i) {
-            QWidget *itemWidget = taskList->itemWidget(taskList->item(i));
-            QLabel *label = itemWidget->findChild<QLabel *>();
-            if (label)
-                out << label->text() << "\n";
+// Override event filter to detect double-click on task
+bool ToDoListWidget::eventFilter(QObject *watched, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonDblClick) {
+        QWidget *taskWidget = qobject_cast<QWidget *>(watched);
+        if (taskWidget) {
+            removeTask(taskWidget);
+            return true;
         }
-        file.close();
     }
+    return QWidget::eventFilter(watched, event);
 }
 
-void ToDoListWidget::loadTasksFromFile()
-{
-    QFile file("tasks.txt");
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&file);
-        while (!in.atEnd()) {
-            QString line = in.readLine().trimmed();
-            if (!line.isEmpty()) {
-                createTaskItem(line, true);
-            }
-        }
-        file.close();
-    }
+// Remove task
+void ToDoListWidget::removeTask(QWidget *taskWidget) {
+    taskLayout->removeWidget(taskWidget);
+    taskWidget->deleteLater();
 }
