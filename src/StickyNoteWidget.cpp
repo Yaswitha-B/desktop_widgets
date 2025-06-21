@@ -10,7 +10,7 @@ StickyNoteWidget::StickyNoteWidget(QWidget *parent)
 void StickyNoteWidget::setupUI() {
     noteText = new QTextEdit(this);
     noteText->setPlaceholderText("Write your note here...");
-    noteText->setStyleSheet("border: none; background: transparent; font-size: 14px;");
+    noteText->setStyleSheet("background: transparent; font-size: 14px;");
 
     colorButton = new QPushButton("🎨", this);
     colorButton->setFixedSize(24, 24);

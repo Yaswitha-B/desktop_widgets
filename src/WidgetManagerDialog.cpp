@@ -11,7 +11,6 @@ WidgetManagerDialog::WidgetManagerDialog(QWidget* parent)
     setupUI();
     loadConfiguration();
 
-    // Apply modern window styling
     setStyleSheet(R"(
         QWidget {
             background-color: #f5f7fa; /* light grey background */
@@ -50,17 +49,17 @@ void WidgetManagerDialog::setupUI() {
 
     auto buttonLayout = new QHBoxLayout();
 
-    m_addButton = new QPushButton("➕ Add Widget", this);
+    m_addButton = new QPushButton("Add Widget", this);
     m_addButton->setMinimumHeight(36);
     connect(m_addButton, &QPushButton::clicked, this, &WidgetManagerDialog::addWidget);
     buttonLayout->addWidget(m_addButton);
 
-    m_removeButton = new QPushButton("❌ Remove Widget", this);
+    m_removeButton = new QPushButton("Remove Widget", this);
     m_removeButton->setMinimumHeight(36);
     connect(m_removeButton, &QPushButton::clicked, this, &WidgetManagerDialog::removeSelectedWidget);
     buttonLayout->addWidget(m_removeButton);
 
-    m_saveButton = new QPushButton("💾 Save", this);
+    m_saveButton = new QPushButton("Save", this);
     m_saveButton->setMinimumHeight(36);
     connect(m_saveButton, &QPushButton::clicked, this, &WidgetManagerDialog::saveConfiguration);
     buttonLayout->addWidget(m_saveButton);
@@ -72,10 +71,11 @@ void WidgetManagerDialog::setupUI() {
 
 void WidgetManagerDialog::addWidget() {
     QMenu menu(this);
-    menu.addAction("🟥 Color Widget", [this]() { createNewWidget("ColorWidget"); });
-    menu.addAction("⏰ Digital Clock", [this]() { createNewWidget("DigitalClockWidget"); });
-    menu.addAction("📝 ToDo List", [this]() { createNewWidget("ToDoListWidget"); });
-
+    menu.addAction("Color Widget", [this]() { createNewWidget("ColorWidget"); });
+    menu.addAction("Digital Clock", [this]() { createNewWidget("DigitalClockWidget"); });
+    menu.addAction("ToDo List", [this]() { createNewWidget("ToDoListWidget"); });
+    menu.addAction("Sticky Note", [this]() { createNewWidget("StickyNoteWidget"); });
+    menu.addAction("Calendar", [this]() { createNewWidget("CalendarWidget"); });
     menu.exec(QCursor::pos());
 }
 
@@ -106,7 +106,7 @@ void WidgetManagerDialog::loadConfiguration() {
     for (auto widget : WidgetManager::instance().getWidgets()) {
         QString type = widget->metaObject()->className();
         QString pos = QString::number(widget->x()) + ", " + QString::number(widget->y());
-        m_widgetList->addItem(QString("🧩 %1 at (%2)").arg(type).arg(pos));
+        m_widgetList->addItem(QString("%1 at (%2)").arg(type).arg(pos));
     }
 }
 

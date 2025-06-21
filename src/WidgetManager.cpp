@@ -2,6 +2,8 @@
 #include "ColorWidget.h"
 #include "DigitalClockWidget.h"
 #include "ToDoListWidget.h"
+#include "CalendarWidget.h"
+#include "StickyNoteWidget.h"
 
 WidgetManager& WidgetManager::instance() {
     static WidgetManager instance;
@@ -66,6 +68,10 @@ BaseWidget* WidgetManager::createWidget(const QString& type, QWidget* parent) {
         widget = new DigitalClockWidget(parent);
     } else if (type == "ToDoListWidget") {
         widget = new ToDoListWidget(parent);
+    } else if (type == "CalendarWidget") {
+        widget = new CalendarWidget(parent);
+    } else if (type == "StickyNoteWidget") {
+        widget = new StickyNoteWidget(parent);
     }
     return widget;
 }
