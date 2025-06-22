@@ -77,6 +77,7 @@ void WidgetManagerDialog::addWidget() {
     menu.addAction("Calendar", [this]() { createNewWidget("CalendarWidget"); });
     menu.addAction("Image", [this]() { createNewWidget("ImageWidget"); });
     menu.addAction("Sticky Notes", [this]() { createNewWidget("StickyNoteWidget"); });
+    menu.addAction("system Stats", [this]() { createNewWidget("SystemStatsDashboard"); });
     menu.exec(QCursor::pos());
 }
 

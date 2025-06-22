@@ -5,6 +5,7 @@
 #include "CalendarWidget.h"
 #include "ImageWidget.h"
 #include "StickyNoteWidget.h"
+#include "SystemStatsDashboard.h"
 
 WidgetManager& WidgetManager::instance() {
     static WidgetManager instance;
@@ -97,8 +98,9 @@ BaseWidget* WidgetManager::createWidget(const QString& type, QWidget* parent) {
         widget = new CalendarWidget(parent);
     } else if (type == "StickyNoteWidget") {
         widget = new StickyNoteWidget(parent);
+    } else if (type == "SystemStatsDashboard") {
+        widget = new SystemStatsDashboard(parent);
     }
-
     return widget;
 }
 
