@@ -17,29 +17,23 @@ WidgetManager::WidgetManager(QObject* parent) : QObject(parent), m_settings("Car
 void WidgetManager::loadWidgets(QWidget* parent) {
     qDeleteAll(m_widgets);
     m_widgets.clear();
-
     int size = m_settings.beginReadArray("widgets");
-    bool stickyNoteLoaded = false;
     for (int i = 0; i < size; ++i) {
         m_settings.setArrayIndex(i);
         QString type = m_settings.value("type").toString();
         QVariantMap state = m_settings.value("state").toMap();
-
         BaseWidget* widget = nullptr;
         if (type == "StickyNoteWidget") {
-            if (stickyNoteLoaded) {
-                continue; // Skip additional sticky notes
-            }
-            StickyNoteWidget* note = new StickyNoteWidget(parent);
+            QString noteId = state.contains("noteData") && state["noteData"].toMap().contains("uniqueId") ? state["noteData"].toMap()["uniqueId"].toString() : QUuid::createUuid().toString(QUuid::WithoutBraces);
+            StickyNoteWidget* note = new StickyNoteWidget(parent, noteId);
             if (state.contains("noteData")) {
                 note->loadNoteData(state["noteData"].toMap());
             }
+            connect(note, &StickyNoteWidget::changed, this, &WidgetManager::saveWidgets);
             widget = note;
-            stickyNoteLoaded = true;
         } else {
             widget = createWidget(type, parent);
         }
-
         if (widget) {
             loadWidgetState(widget, state);
             widget->show();
@@ -47,6 +41,44 @@ void WidgetManager::loadWidgets(QWidget* parent) {
         }
     }
     m_settings.endArray();
+}
+
+BaseWidget* WidgetManager::createWidget(const QString& type, QWidget* parent) {
+    BaseWidget* widget = nullptr;
+    QString id;
+    if (type == "ImageWidget") {
+        id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        return new ImageWidget(parent, id);
+    }
+    if (type == "ColorWidget") {
+        widget = new ColorWidget(parent);
+    } else if (type == "DigitalClockWidget") {
+        widget = new DigitalClockWidget(parent);
+    } else if (type == "ToDoListWidget") {
+        widget = new ToDoListWidget(parent);
+    } else if (type == "CalendarWidget") {
+        widget = new CalendarWidget(parent);
+    } else if (type == "StickyNoteWidget") {
+        id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        widget = new StickyNoteWidget(parent, id);
+    } else if (type == "SystemStatsDashboard") {
+        widget = new SystemStatsDashboard(parent);
+    }
+    return widget;
+}
+
+QVariantMap WidgetManager::saveWidgetState(BaseWidget* widget) const {
+    QVariantMap state;
+    state["geometry"] = widget->geometry();
+    state["size"] = widget->size();
+    if (auto imgWidget = qobject_cast<const ImageWidget*>(widget)) {
+        state["uniqueId"] = imgWidget->getUniqueId();
+        state["imagePath"] = imgWidget->getImagePath();
+    }
+    if (auto* note = qobject_cast<StickyNoteWidget*>(widget)) {
+        state["noteData"] = note->noteData();
+    }
+    return state;
 }
 
 void WidgetManager::saveWidgets() {
@@ -81,29 +113,6 @@ QList<BaseWidget*> WidgetManager::getWidgets() const {
     return m_widgets;
 }
 
-BaseWidget* WidgetManager::createWidget(const QString& type, QWidget* parent) {
-    BaseWidget* widget = nullptr;
-    QString id;
-    if (type == "ImageWidget") {
-        id = QUuid::createUuid().toString(QUuid::WithoutBraces);
-        return new ImageWidget(parent, id);
-    }
-    if (type == "ColorWidget") {
-        widget = new ColorWidget(parent);
-    } else if (type == "DigitalClockWidget") {
-        widget = new DigitalClockWidget(parent);
-    } else if (type == "ToDoListWidget") {
-        widget = new ToDoListWidget(parent);
-    } else if (type == "CalendarWidget") {
-        widget = new CalendarWidget(parent);
-    } else if (type == "StickyNoteWidget") {
-        widget = new StickyNoteWidget(parent);
-    } else if (type == "SystemStatsDashboard") {
-        widget = new SystemStatsDashboard(parent);
-    }
-    return widget;
-}
-
 void WidgetManager::loadWidgetState(BaseWidget* widget, const QVariantMap& state) {
     if (!state.isEmpty()) {
         QRect geom = state["geometry"].toRect();
@@ -122,21 +131,4 @@ void WidgetManager::loadWidgetState(BaseWidget* widget, const QVariantMap& state
             }
         }
     }
-}
-
-QVariantMap WidgetManager::saveWidgetState(BaseWidget* widget) const {
-    QVariantMap state;
-    state["geometry"] = widget->geometry();
-    state["size"] = widget->size();
-    
-    if (auto imgWidget = qobject_cast<const ImageWidget*>(widget)) {
-        state["uniqueId"] = imgWidget->getUniqueId();
-        state["imagePath"] = imgWidget->getImagePath();
-    }
-
-    if (auto* note = qobject_cast<StickyNoteWidget*>(widget)) {
-        state["noteData"] = note->noteData();
-    }
-
-    return state;
 }

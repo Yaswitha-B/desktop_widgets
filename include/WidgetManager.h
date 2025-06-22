@@ -19,11 +19,9 @@ public:
 
 private:
     explicit WidgetManager(QObject* parent = nullptr);
-
     BaseWidget* createWidget(const QString& type, QWidget* parent);
     void loadWidgetState(BaseWidget* widget, const QVariantMap& state);
     QVariantMap saveWidgetState(BaseWidget* widget) const;
-
     QList<BaseWidget*> m_widgets;
     QSettings m_settings;
 };

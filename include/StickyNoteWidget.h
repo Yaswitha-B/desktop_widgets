@@ -11,20 +11,22 @@ class StickyNoteWidget : public BaseWidget {
 
 public:
     explicit StickyNoteWidget(QWidget *parent = nullptr);
-
-    QVariantMap noteData() const;                    // For WidgetManager save
-    void loadNoteData(const QVariantMap &data);      // For WidgetManager load
+    explicit StickyNoteWidget(QWidget *parent, const QString &uniqueId);
+    QString getUniqueId() const;
+    void setUniqueId(const QString &id);
+    QVariantMap noteData() const;                    
+    void loadNoteData(const QVariantMap &data);      
 
 signals:
-    void changed();  // 👉 Notify WidgetManager to trigger save
+    void changed(); 
 
 private slots:
-    void chooseColor();       // Open color dialog
-    void onTextChanged();     // Triggered by text edits
+    void chooseColor();       
+    void onTextChanged();     
 
 private:
-    void updateBackgroundColor();  // Apply selected color
-
+    void updateBackgroundColor();  
+    QString m_uniqueId;
     QLineEdit *titleEdit;
     QTextEdit *noteEdit;
     QColor backgroundColor;
