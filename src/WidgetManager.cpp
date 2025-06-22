@@ -4,6 +4,7 @@
 #include "ToDoListWidget.h"
 #include "CalendarWidget.h"
 #include "ImageWidget.h"
+#include "StickyNoteWidget.h"
 
 WidgetManager& WidgetManager::instance() {
     static WidgetManager instance;
@@ -13,13 +14,32 @@ WidgetManager& WidgetManager::instance() {
 WidgetManager::WidgetManager(QObject* parent) : QObject(parent), m_settings("CarpeDiem", "DesktopWidgets") {}
 
 void WidgetManager::loadWidgets(QWidget* parent) {
+    qDeleteAll(m_widgets);
+    m_widgets.clear();
+
     int size = m_settings.beginReadArray("widgets");
+    bool stickyNoteLoaded = false;
     for (int i = 0; i < size; ++i) {
         m_settings.setArrayIndex(i);
         QString type = m_settings.value("type").toString();
         QVariantMap state = m_settings.value("state").toMap();
-        
-        if (BaseWidget* widget = createWidget(type, parent)) {
+
+        BaseWidget* widget = nullptr;
+        if (type == "StickyNoteWidget") {
+            if (stickyNoteLoaded) {
+                continue; // Skip additional sticky notes
+            }
+            StickyNoteWidget* note = new StickyNoteWidget(parent);
+            if (state.contains("noteData")) {
+                note->loadNoteData(state["noteData"].toMap());
+            }
+            widget = note;
+            stickyNoteLoaded = true;
+        } else {
+            widget = createWidget(type, parent);
+        }
+
+        if (widget) {
             loadWidgetState(widget, state);
             widget->show();
             m_widgets.append(widget);
@@ -75,7 +95,10 @@ BaseWidget* WidgetManager::createWidget(const QString& type, QWidget* parent) {
         widget = new ToDoListWidget(parent);
     } else if (type == "CalendarWidget") {
         widget = new CalendarWidget(parent);
+    } else if (type == "StickyNoteWidget") {
+        widget = new StickyNoteWidget(parent);
     }
+
     return widget;
 }
 
@@ -108,5 +131,10 @@ QVariantMap WidgetManager::saveWidgetState(BaseWidget* widget) const {
         state["uniqueId"] = imgWidget->getUniqueId();
         state["imagePath"] = imgWidget->getImagePath();
     }
+
+    if (auto* note = qobject_cast<StickyNoteWidget*>(widget)) {
+        state["noteData"] = note->noteData();
+    }
+
     return state;
 }

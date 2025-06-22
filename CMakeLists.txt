@@ -19,7 +19,7 @@ set(SOURCES
     src/WidgetManagerDialog.cpp
     src/CalendarWidget.cpp
     src/ImageWidget.cpp
-    include/ImageWidget.h
+    src/StickyNoteWidget.cpp
 )
 
 set(HEADERS
@@ -32,6 +32,8 @@ set(HEADERS
     include/WidgetManager.h
     include/WidgetManagerDialog.h
     include/CalendarWidget.h
+    include/StickyNoteWidget.h
+    include/ImageWidget.h
 )
 
 add_executable(DesktopWidgets ${SOURCES} ${HEADERS})

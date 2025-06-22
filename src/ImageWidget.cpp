@@ -20,6 +20,7 @@ ImageWidget::ImageWidget(QWidget *parent, const QString &id)
     changeImageButton = new QPushButton("\U0001F5BC Change", this);
     resizeModeButton = new QPushButton("\U0001F5D1 Resize", this);
     connect(resizeModeButton, &QPushButton::clicked, this, &ImageWidget::onToggleResizeMode);
+    connect(changeImageButton, &QPushButton::clicked, this, &ImageWidget::onChangeImage);
     changeImageButton->setFocusPolicy(Qt::NoFocus);
     resizeModeButton->setFocusPolicy(Qt::NoFocus);
     changeImageButton->setStyleSheet("QPushButton { background: #4f8cff; color: white; border-radius: 8px; padding: 4px 12px; font-weight: bold; } QPushButton:hover { background: #357ae8; }");
