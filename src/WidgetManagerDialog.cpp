@@ -75,6 +75,8 @@ void WidgetManagerDialog::addWidget() {
     menu.addAction("Digital Clock", [this]() { createNewWidget("DigitalClockWidget"); });
     menu.addAction("ToDo List", [this]() { createNewWidget("ToDoListWidget"); });
     menu.addAction("Calendar", [this]() { createNewWidget("CalendarWidget"); });
+    QAction *addImageWidget = menu.addAction("Image Widget");
+    connect(addImageWidget, &QAction::triggered, this, [this]() { createNewWidget("ImageWidget"); });
     menu.exec(QCursor::pos());
 }
 

@@ -18,6 +18,8 @@ set(SOURCES
     src/WidgetManager.cpp
     src/WidgetManagerDialog.cpp
     src/CalendarWidget.cpp
+    src/ImageWidget.cpp
+    include/ImageWidget.h
 )
 
 set(HEADERS

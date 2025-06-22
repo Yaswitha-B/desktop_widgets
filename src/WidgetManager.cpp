@@ -3,13 +3,14 @@
 #include "DigitalClockWidget.h"
 #include "ToDoListWidget.h"
 #include "CalendarWidget.h"
+#include "ImageWidget.h"
 
 WidgetManager& WidgetManager::instance() {
     static WidgetManager instance;
     return instance;
 }
 
-WidgetManager::WidgetManager(QObject* parent) : QObject(parent), m_settings("MyCompany", "MyApp") {}
+WidgetManager::WidgetManager(QObject* parent) : QObject(parent), m_settings("CarpeDiem", "DesktopWidgets") {}
 
 void WidgetManager::loadWidgets(QWidget* parent) {
     int size = m_settings.beginReadArray("widgets");
@@ -61,6 +62,11 @@ QList<BaseWidget*> WidgetManager::getWidgets() const {
 
 BaseWidget* WidgetManager::createWidget(const QString& type, QWidget* parent) {
     BaseWidget* widget = nullptr;
+    QString id;
+    if (type == "ImageWidget") {
+        id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        return new ImageWidget(parent, id);
+    }
     if (type == "ColorWidget") {
         widget = new ColorWidget(parent);
     } else if (type == "DigitalClockWidget") {
@@ -75,12 +81,32 @@ BaseWidget* WidgetManager::createWidget(const QString& type, QWidget* parent) {
 
 void WidgetManager::loadWidgetState(BaseWidget* widget, const QVariantMap& state) {
     if (!state.isEmpty()) {
-        widget->setGeometry(state["geometry"].toRect());
+        QRect geom = state["geometry"].toRect();
+        widget->setGeometry(geom);
+        if (state.contains("size")) {
+            QSize sz = state["size"].toSize();
+            widget->resize(sz);
+        }
+
+        if (auto imgWidget = qobject_cast<ImageWidget*>(widget)) {
+            if (state.contains("uniqueId")) {
+                imgWidget->setUniqueId(state["uniqueId"].toString());
+            }
+            if (state.contains("imagePath")) {
+                imgWidget->setImage(state["imagePath"].toString());
+            }
+        }
     }
 }
 
 QVariantMap WidgetManager::saveWidgetState(BaseWidget* widget) const {
     QVariantMap state;
     state["geometry"] = widget->geometry();
+    state["size"] = widget->size();
+    
+    if (auto imgWidget = qobject_cast<const ImageWidget*>(widget)) {
+        state["uniqueId"] = imgWidget->getUniqueId();
+        state["imagePath"] = imgWidget->getImagePath();
+    }
     return state;
 }
