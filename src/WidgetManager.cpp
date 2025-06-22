@@ -70,13 +70,16 @@ BaseWidget* WidgetManager::createWidget(const QString& type, QWidget* parent) {
 QVariantMap WidgetManager::saveWidgetState(BaseWidget* widget) const {
     QVariantMap state;
     state["geometry"] = widget->geometry();
-    state["size"] = widget->size();
     if (auto imgWidget = qobject_cast<const ImageWidget*>(widget)) {
+        state["size"] = widget->size();
         state["uniqueId"] = imgWidget->getUniqueId();
         state["imagePath"] = imgWidget->getImagePath();
     }
     if (auto* note = qobject_cast<StickyNoteWidget*>(widget)) {
         state["noteData"] = note->noteData();
+    }
+    if (auto* clock = qobject_cast<const DigitalClockWidget*>(widget)) {
+        state["clockSize"] = widget->size();
     }
     return state;
 }
@@ -117,17 +120,22 @@ void WidgetManager::loadWidgetState(BaseWidget* widget, const QVariantMap& state
     if (!state.isEmpty()) {
         QRect geom = state["geometry"].toRect();
         widget->setGeometry(geom);
-        if (state.contains("size")) {
-            QSize sz = state["size"].toSize();
-            widget->resize(sz);
-        }
-
         if (auto imgWidget = qobject_cast<ImageWidget*>(widget)) {
+            if (state.contains("size")) {
+                QSize sz = state["size"].toSize();
+                widget->resize(sz);
+            }
             if (state.contains("uniqueId")) {
                 imgWidget->setUniqueId(state["uniqueId"].toString());
             }
             if (state.contains("imagePath")) {
                 imgWidget->setImage(state["imagePath"].toString());
+            }
+        }
+        if (auto* clock = qobject_cast<DigitalClockWidget*>(widget)) {
+            if (state.contains("clockSize")) {
+                QSize sz = state["clockSize"].toSize();
+                widget->resize(sz);
             }
         }
     }
