@@ -74,7 +74,6 @@ void WidgetManagerDialog::addWidget() {
     menu.addAction("Color Widget", [this]() { createNewWidget("ColorWidget"); });
     menu.addAction("Digital Clock", [this]() { createNewWidget("DigitalClockWidget"); });
     menu.addAction("ToDo List", [this]() { createNewWidget("ToDoListWidget"); });
-    menu.addAction("Sticky Note", [this]() { createNewWidget("StickyNoteWidget"); });
     menu.addAction("Calendar", [this]() { createNewWidget("CalendarWidget"); });
     menu.exec(QCursor::pos());
 }
