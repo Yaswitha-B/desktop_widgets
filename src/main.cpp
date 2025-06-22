@@ -12,7 +12,6 @@ int main(int argc, char *argv[]) {
     WidgetManager::instance().loadWidgets(&mainWindow);
 
     auto settingsWidget = new SettingsWidget(&mainWindow);
-    settingsWidget->setGeometry(900, 100, 60, 60);
     settingsWidget->show();
 
     int result = app.exec();

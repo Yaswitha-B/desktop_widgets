@@ -1,12 +1,18 @@
 #include "SettingsWidget.h"
+#include "WidgetManagerDialog.h"
 #include <QPainter>
 #include <QMouseEvent>
+#include <QSettings>
 
 SettingsWidget::SettingsWidget(QWidget *parent)
     : BaseWidget(parent), managerDialog(nullptr)
 {
     setFixedSize(60, 60);
     setAttribute(Qt::WA_TranslucentBackground);
+
+    QSettings settings("CarpeDiem", "DesktopWidgets");
+    QPoint savedPos = settings.value("SettingsWidget/pos", QPoint(100, 100)).toPoint();
+    move(savedPos);
 }
 
 void SettingsWidget::paintEvent(QPaintEvent *event)
@@ -39,4 +45,10 @@ void SettingsWidget::mousePressEvent(QMouseEvent *event) {
         WidgetManagerDialog dialog(parentWidget());
         dialog.exec();
     }
+}
+
+void SettingsWidget::mouseReleaseEvent(QMouseEvent *event) {
+    BaseWidget::mouseReleaseEvent(event);
+    QSettings settings("CarpeDiem", "DesktopWidgets");
+    settings.setValue("SettingsWidget/pos", this->pos());
 }
