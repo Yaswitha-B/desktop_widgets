@@ -4,14 +4,17 @@
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <sys/statvfs.h>
-#include <QMouseEvent>
+#endif
 
 SystemStatsDashboard::SystemStatsDashboard(QWidget *parent)
-    : BaseWidget(parent) {
+    : BaseWidget(parent), lastTotal(0), lastIdle(0) {
     setFixedSize(360, 140);
     setStyleSheet("background-color: rgba(20, 20, 20, 180);");
-    setToolTip("Double-click to drag");  // ✨ Cute little hint
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setSpacing(10);
@@ -39,11 +42,17 @@ void SystemStatsDashboard::updateStats() {
 }
 
 float SystemStatsDashboard::getCpu() {
+#ifdef _WIN32
+    // Windows placeholder - you can improve this later with real stats if needed
+    return 50.0f; // dummy value for Windows
+#else
     QFile file("/proc/stat");
     if (!file.open(QIODevice::ReadOnly)) return 0.0f;
 
     QByteArray line = file.readLine();
     QList<QByteArray> v = line.simplified().split(' ');
+
+    if (v.size() < 5) return 0.0f;
 
     quint64 user = v[1].toULongLong();
     quint64 nice = v[2].toULongLong();
@@ -58,9 +67,18 @@ float SystemStatsDashboard::getCpu() {
     lastIdle = idle;
 
     return totalDiff == 0 ? 0 : (1.0f - (float)idleDiff / totalDiff) * 100.0f;
+#endif
 }
 
 float SystemStatsDashboard::getMem() {
+#ifdef _WIN32
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof(statex);
+    if (GlobalMemoryStatusEx(&statex)) {
+        return 100.0f - statex.dwMemoryLoad; // % used
+    }
+    return 0.0f;
+#else
     QFile file("/proc/meminfo");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return 0.0f;
 
@@ -80,32 +98,25 @@ float SystemStatsDashboard::getMem() {
     }
 
     return total > 0 ? (1.0 - (float)available / total) * 100.0f : 0.0f;
+#endif
 }
 
 float SystemStatsDashboard::getDisk() {
+#ifdef _WIN32
+    ULARGE_INTEGER freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
+
+    if (GetDiskFreeSpaceEx(L"C:\\", &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes)) {
+        quint64 total = totalNumberOfBytes.QuadPart;
+        quint64 free = totalNumberOfFreeBytes.QuadPart;
+        return total > 0 ? (1.0 - (float)free / total) * 100.0f : 0.0f;
+    }
+    return 0.0f;
+#else
     struct statvfs stat;
     if (statvfs("/", &stat) != 0) return 0.0f;
 
     quint64 total = stat.f_blocks * stat.f_frsize;
     quint64 free = stat.f_bavail * stat.f_frsize;
     return total > 0 ? (1.0 - (float)free / total) * 100.0f : 0.0f;
-}
-
-// ------- Dragging Support after Double Click ---------
-void SystemStatsDashboard::mouseDoubleClickEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        draggable = !draggable;
-    }
-}
-
-void SystemStatsDashboard::mousePressEvent(QMouseEvent *event) {
-    if (draggable && event->button() == Qt::LeftButton) {
-        dragStartPos = event->globalPosition().toPoint() - frameGeometry().topLeft();
-    }
-}
-
-void SystemStatsDashboard::mouseMoveEvent(QMouseEvent *event) {
-    if (draggable && (event->buttons() & Qt::LeftButton)) {
-        move(event->globalPosition().toPoint() - dragStartPos);
-    }
+#endif
 }
