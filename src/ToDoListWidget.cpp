@@ -1,8 +1,8 @@
 #include "ToDoListWidget.h"
 
 ToDoListWidget::ToDoListWidget(QWidget *parent) : BaseWidget(parent) {
-    setFixedSize(300, 400); 
-    setStyleSheet("background-color: #eeeeee;");
+    setFixedSize(300, 400);
+    // setStyleSheet("background-color: #eeeeee;");
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
@@ -33,7 +33,7 @@ void ToDoListWidget::addTask() {
     if (taskText.isEmpty()) return;
 
     QWidget *taskWidget = new QWidget();
-    taskWidget->setStyleSheet("background-color: white; padding: 8px;");
+    taskWidget->setStyleSheet("padding: 8px;");
     QHBoxLayout *layout = new QHBoxLayout(taskWidget);
 
     QCheckBox *checkbox = new QCheckBox();

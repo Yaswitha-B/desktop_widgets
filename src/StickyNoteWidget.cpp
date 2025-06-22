@@ -4,7 +4,7 @@ StickyNoteWidget::StickyNoteWidget(QWidget *parent)
     : BaseWidget(parent) {
     resize(300, 300);
     setupUI();
-    applyStyle(QColor("#fff9c4"));
+    // applyStyle(QColor("#fff9c4"));
 }
 
 void StickyNoteWidget::setupUI() {
