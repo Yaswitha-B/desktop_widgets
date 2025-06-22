@@ -17,12 +17,16 @@ public:
 private slots:
     void showPreviousMonth();
     void showNextMonth();
+    void onDateClicked(const QDate &date);
 
 private:
     QCalendarWidget *calendar;
     QLabel *monthLabel;
     QDate currentDate;
-
+    QMap<QDate, QStringList> events;
     void updateMonthLabel();
     void applyCreamyStyle();
+    void highlightEventDates();
+    void saveEvents();
+    void loadEvents();
 };

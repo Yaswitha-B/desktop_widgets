@@ -1,6 +1,15 @@
 #include "CalendarWidget.h"
 #include <QTextCharFormat>
 #include <QFont>
+#include <QInputDialog>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QListWidget>
+#include <QLineEdit>
 
 CalendarWidget::CalendarWidget(QWidget *parent)
     : BaseWidget(parent), currentDate(QDate::currentDate()) {
@@ -17,23 +26,7 @@ CalendarWidget::CalendarWidget(QWidget *parent)
     calendar->setMinimumDate(QDate(1900, 1, 1));
     calendar->setMaximumDate(QDate(2100, 12, 31));
 
-    QTextCharFormat hiddenFormat;
-    hiddenFormat.setForeground(Qt::transparent);
-    for (int row = 0; row < 6; ++row) {
-        for (int col = 1; col <= 7; ++col) {
-            QDate date = QDate(currentDate.year(), currentDate.month(), 1);
-            int firstDayOfWeek = date.dayOfWeek();
-            int daysInMonth = date.daysInMonth();
-
-            int index = row * 7 + col;
-            int actualDay = index - firstDayOfWeek + 1;
-
-            if (actualDay < 1 || actualDay > daysInMonth) {
-                QDate outDate = date.addDays(actualDay - 1);
-                calendar->setDateTextFormat(outDate, hiddenFormat);
-            }
-        }
-    }
+    // Removed code that sets some dates to transparent
 
     applyCreamyStyle();
 
@@ -45,7 +38,7 @@ CalendarWidget::CalendarWidget(QWidget *parent)
 
     connect(prevButton, &QPushButton::clicked, this, &CalendarWidget::showPreviousMonth);
     connect(nextButton, &QPushButton::clicked, this, &CalendarWidget::showNextMonth);
-
+    connect(calendar, &QCalendarWidget::clicked, this, &CalendarWidget::onDateClicked);
     updateMonthLabel();
 
     QHBoxLayout *headerLayout = new QHBoxLayout();
@@ -57,6 +50,8 @@ CalendarWidget::CalendarWidget(QWidget *parent)
     mainLayout->addLayout(headerLayout);
     mainLayout->addWidget(calendar);
     setLayout(mainLayout);
+    loadEvents();
+    highlightEventDates();
 }
 
 void CalendarWidget::showPreviousMonth() {
@@ -78,25 +73,99 @@ void CalendarWidget::updateMonthLabel() {
     calendar->setCurrentPage(currentDate.year(), currentDate.month());
 }
 
+void CalendarWidget::onDateClicked(const QDate &date) {
+    QDialog dialog(this);
+    dialog.setWindowTitle("Events for " + date.toString("dd MMM yyyy"));
+    dialog.setStyleSheet("background:#fffbe6; font-family:'Georgia'; font-size:15px;");
+    QVBoxLayout *layout = new QVBoxLayout(&dialog);
+    QListWidget *eventListWidget = new QListWidget(&dialog);
+    eventListWidget->addItems(events.value(date));
+    eventListWidget->setStyleSheet("background:#fffde7; border-radius:6px; padding:6px; color:#3e3e3e;");
+    layout->addWidget(eventListWidget);
+    QLineEdit *eventInput = new QLineEdit(&dialog);
+    eventInput->setPlaceholderText("Add a new event...");
+    eventInput->setStyleSheet("background:#fffde7; border-radius:6px; padding:6px; margin-top:8px;");
+    layout->addWidget(eventInput);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+    layout->addWidget(buttonBox);
+    QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    QObject::connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    if (dialog.exec() == QDialog::Accepted) {
+        QString text = eventInput->text().trimmed();
+        if (!text.isEmpty()) {
+            events[date].append(text);
+            saveEvents();
+            highlightEventDates();
+        }
+    }
+}
+
 void CalendarWidget::applyCreamyStyle() {
     calendar->setStyleSheet(R"(
         QCalendarWidget QWidget {
-            background-color: #fdf5e6;
+            background-color: #fffbe6;
         }
         QCalendarWidget QToolButton {
             background-color: transparent;
+            color: #6d4c41;
+            font-size: 18px;
+            font-weight: bold;
         }
         QCalendarWidget QAbstractItemView {
             font-family: 'Georgia';
             font-size: 16px;
             color: #3e3e3e;
-            background-color: #fdf5e6;
-            selection-background-color: #ffecb3;
-            selection-color: black;
+            background-color: #fffbe6;
+            selection-background-color: #ffe082;
+            selection-color: #4e342e;
+            border-radius: 8px;
         }
         QCalendarWidget QHeaderView::section {
-            background-color: #fdf5e6;
+            background-color: #fffbe6;
             font-weight: bold;
+            color: #6d4c41;
+        }
+        QCalendarWidget QSpinBox {
+            background: #fffbe6;
         }
     )");
+}
+
+void CalendarWidget::highlightEventDates() {
+    QTextCharFormat fmt;
+    fmt.setBackground(QColor("#ffe082"));
+    for (const QDate &date : events.keys()) {
+        calendar->setDateTextFormat(date, fmt);
+    }
+}
+
+void CalendarWidget::saveEvents() {
+    QFile file("calendar_events.json");
+    if (!file.open(QIODevice::WriteOnly)) return;
+    QJsonObject root;
+    for (auto it = events.begin(); it != events.end(); ++it) {
+        QJsonArray arr;
+        for (const QString &ev : it.value()) arr.append(ev);
+        root[it.key().toString(Qt::ISODate)] = arr;
+    }
+    QJsonDocument doc(root);
+    file.write(doc.toJson());
+    file.close();
+}
+
+void CalendarWidget::loadEvents() {
+    QFile file("calendar_events.json");
+    if (!file.open(QIODevice::ReadOnly)) return;
+    QByteArray data = file.readAll();
+    file.close();
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (!doc.isObject()) return;
+    QJsonObject root = doc.object();
+    for (const QString &key : root.keys()) {
+        QDate date = QDate::fromString(key, Qt::ISODate);
+        QJsonArray arr = root[key].toArray();
+        QStringList evs;
+        for (const QJsonValue &v : arr) evs.append(v.toString());
+        events[date] = evs;
+    }
 }
