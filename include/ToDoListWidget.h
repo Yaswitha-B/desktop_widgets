@@ -8,6 +8,8 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QEvent>
+#include <QFile>
+#include <QTextStream>
 
 class ToDoListWidget : public BaseWidget {
     Q_OBJECT
@@ -24,6 +26,9 @@ private slots:
     void toggleTaskState(QCheckBox *checkbox, QLabel *label);
 
 private:
+    void addTask(const QString &text, bool completed); 
+    void saveTasks();                                  
+    void loadTasks();                                 
     QVBoxLayout *taskLayout;
     QLineEdit *taskInput;
 };
