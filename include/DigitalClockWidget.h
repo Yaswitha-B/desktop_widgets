@@ -3,6 +3,7 @@
 #include "BaseWidget.h"
 #include <QTimer>
 #include <QTime>
+#include <QDate>
 
 class DigitalClockWidget : public BaseWidget
 {
@@ -16,6 +17,7 @@ protected:
 private:
     QTimer *timer;
     QTime currentTime;
+    QDate currentDate;
 
     void updateTime();
 };
