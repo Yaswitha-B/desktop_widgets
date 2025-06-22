@@ -7,7 +7,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent) {
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
     setAttribute(Qt::WA_NoSystemBackground);
-
     QRect fullGeometry;
     const auto screens = QGuiApplication::screens();
     for (QScreen* screen : screens) {
