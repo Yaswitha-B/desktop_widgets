@@ -4,7 +4,7 @@
 
 StatArcWidget::StatArcWidget(const QString &label, const QColor &color, QWidget *parent)
     : QWidget(parent), label(label), color(color) {
-    setFixedSize(110, 110);
+    setFixedSize(80, 80);
 }
 
 void StatArcWidget::setUsage(float percent) {

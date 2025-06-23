@@ -1,17 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
 project(DesktopWidgets LANGUAGES CXX)
 
-# ✅ Qt MOC auto-processing
+
 set(CMAKE_AUTOMOC ON)
 
-# ✅ C++ standard
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# ✅ Find Qt
+
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
-# ✅ Source files
+
 set(SOURCES
     src/main.cpp
     src/MainWidget.cpp
@@ -29,7 +29,7 @@ set(SOURCES
     src/StatArcWidget.cpp
 )
 
-# ✅ Header files
+
 set(HEADERS
     include/MainWidget.h
     include/BaseWidget.h
@@ -46,11 +46,11 @@ set(HEADERS
     include/StatArcWidget.h
 )
 
-# ✅ Create the executable
+
 add_executable(DesktopWidgets ${SOURCES} ${HEADERS})
 
-# ✅ Link Qt
+
 target_link_libraries(DesktopWidgets PRIVATE Qt6::Widgets)
 
-# ✅ Include headers
+
 target_include_directories(DesktopWidgets PRIVATE ${CMAKE_SOURCE_DIR}/include)

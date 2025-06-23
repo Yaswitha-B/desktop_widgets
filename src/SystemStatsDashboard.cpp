@@ -13,7 +13,7 @@
 
 SystemStatsDashboard::SystemStatsDashboard(QWidget *parent)
     : BaseWidget(parent), lastTotal(0), lastIdle(0) {
-    setFixedSize(360, 140);
+    setFixedSize(320, 110);
     setStyleSheet("background-color: rgba(20, 20, 20, 180);");
 
     QHBoxLayout *layout = new QHBoxLayout(this);
